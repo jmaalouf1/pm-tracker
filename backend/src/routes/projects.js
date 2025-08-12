@@ -1,0 +1,13 @@
+import express from 'express';
+import { ProjectsController } from '../controllers/projectsController.js';
+import { authRequired } from '../middleware/auth.js';
+import { requireRole } from '../middleware/auth.js';
+import { Roles } from '../lib/rbac.js';
+const router = express.Router();
+router.use(authRequired);
+router.get('/', ProjectsController.list);
+router.get('/:id', ProjectsController.get);
+router.post('/', requireRole(Roles.SUPER, Roles.PM_ADMIN, Roles.PM_USER), ProjectsController.create);
+router.put('/:id', requireRole(Roles.SUPER, Roles.PM_ADMIN, Roles.PM_USER), ProjectsController.update);
+router.patch('/:id', requireRole(Roles.FINANCE, Roles.SUPER, Roles.PM_ADMIN), ProjectsController.financePatch);
+export default router;

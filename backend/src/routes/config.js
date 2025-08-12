@@ -1,0 +1,11 @@
+import express from 'express';
+import { ConfigController } from '../controllers/configController.js';
+import { authRequired } from '../middleware/auth.js';
+import { requireRole } from '../middleware/auth.js';
+import { Roles } from '../lib/rbac.js';
+const router = express.Router();
+router.use(authRequired);
+router.get('/options', ConfigController.getOptions);
+router.post('/options/:type', requireRole(Roles.SUPER, Roles.PM_ADMIN), ConfigController.createOption);
+router.put('/options/:type/:id', requireRole(Roles.SUPER, Roles.PM_ADMIN), ConfigController.updateOption);
+export default router;

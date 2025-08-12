@@ -1,0 +1,99 @@
+openapi: 3.0.3
+info:
+  title: PM Tracker API
+  version: "1.0.0"
+servers:
+  - url: /api
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string, enum: [super_admin, pm_admin, pm_user, finance] }
+    Project:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        customer_id: { type: integer }
+        segment_id: { type: integer }
+        service_line_id: { type: integer }
+        partner_id: { type: integer }
+        payment_term_id: { type: integer }
+        status_id: { type: integer }
+        po_status_id: { type: integer }
+        invoice_status_id: { type: integer }
+        backlog_2025: { type: number, format: double }
+        created_at: { type: string, format: date-time }
+security:
+  - bearerAuth: []
+paths:
+  /auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        "200":
+          description: Tokens
+  /auth/refresh:
+    post:
+      summary: Refresh access token
+      responses:
+        "200": { description: New access token }
+  /auth/logout:
+    post:
+      summary: Invalidate refresh token
+      responses:
+        "204": { description: Logged out }
+  /users:
+    get:
+      summary: List users
+      responses: { "200": { description: OK } }
+    post:
+      summary: Create user
+      responses: { "201": { description: Created } }
+  /projects:
+    get:
+      summary: List projects with filters and pagination
+      responses: { "200": { description: OK } }
+    post:
+      summary: Create project
+      responses: { "201": { description: Created } }
+  /projects/{id}:
+    get: { summary: Get project, responses: { "200": { description: OK } } }
+    put: { summary: Update project, responses: { "200": { description: OK } } }
+    patch: { summary: Finance partial update, responses: { "200": { description: OK } } }
+  /payment-terms:
+    get: { summary: List payment terms, responses: { "200": { description: OK } } }
+    post: { summary: Create payment term, responses: { "201": { description: Created } } }
+  /payment-terms/{id}:
+    put: { summary: Update payment term, responses: { "200": { description: OK } } }
+    delete: { summary: Delete payment term, responses: { "204": { description: Deleted } } }
+  /config/options:
+    get:
+      summary: Get dropdown options by type(s)
+      parameters:
+        - in: query
+          name: types
+          schema: { type: string }
+      responses: { "200": { description: OK } }
+  /config/options/{type}:
+    post: { summary: Create option, responses: { "201": { description: Created } } }
+  /config/options/{type}/{id}:
+    put: { summary: Update option, responses: { "200": { description: OK } } }

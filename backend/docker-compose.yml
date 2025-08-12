@@ -1,0 +1,36 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: pm_tracker
+      MYSQL_USER: pm_user
+      MYSQL_PASSWORD: pm_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - pm_mysql:/var/lib/mysql
+    command: ["--default-authentication-plugin=mysql_native_password"]
+  api:
+    build: .
+    depends_on:
+      - db
+    environment:
+      - PORT=8080
+      - NODE_ENV=development
+      - JWT_SECRET=devsecret
+      - REFRESH_SECRET=devrefresh
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=pm_user
+      - DB_PASSWORD=pm_pass
+      - DB_NAME=pm_tracker
+      - CORS_ORIGIN=http://localhost:5173
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    command: ["node","src/server.js"]
+volumes:
+  pm_mysql:
