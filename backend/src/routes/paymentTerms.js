@@ -1,0 +1,12 @@
+import express from 'express';
+import { PaymentTermsController } from '../controllers/paymentTermsController.js';
+import { authRequired } from '../middleware/auth.js';
+import { requireRole } from '../middleware/auth.js';
+import { Roles } from '../lib/rbac.js';
+const router = express.Router();
+router.use(authRequired);
+router.get('/', PaymentTermsController.list);
+router.post('/', requireRole(Roles.SUPER, Roles.PM_ADMIN), PaymentTermsController.create);
+router.put('/:id', requireRole(Roles.SUPER, Roles.PM_ADMIN), PaymentTermsController.update);
+router.delete('/:id', requireRole(Roles.SUPER, Roles.PM_ADMIN), PaymentTermsController.remove);
+export default router;
