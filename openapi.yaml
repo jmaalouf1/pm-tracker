@@ -1,0 +1,208 @@
+openapi: 3.0.3
+info:
+  title: Project Tracker API
+  version: 1.0.0
+  description: Cloud-agnostic API for managing users, customers, projects, and finance updates
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: User login to obtain JWT tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: JWT tokens returned
+        '401':
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        '200':
+          description: New access token returned
+
+  /auth/change-password:
+    post:
+      tags: [Auth]
+      summary: Change password (e.g., first login)
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [old_password, new_password]
+              properties:
+                old_password:
+                  type: string
+                new_password:
+                  type: string
+      responses:
+        '200':
+          description: Password changed
+
+  /customers:
+    get:
+      tags: [Customers]
+      summary: List all customers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of customers
+    post:
+      tags: [Customers]
+      summary: Create a new customer
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          description: Customer created
+
+  /projects:
+    post:
+      tags: [Projects]
+      summary: Create a new project
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '201':
+          description: Project created
+
+  /finance/{project_id}:
+    patch:
+      tags: [Finance]
+      summary: Update invoice status or PO flag
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                po_issued:
+                  type: boolean
+                invoice_status:
+                  type: string
+      responses:
+        '200':
+          description: Finance information updated
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Customer:
+      type: object
+      required: [name, country, institution_type]
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        institution_type:
+          type: string
+        registration_number:
+          type: string
+        contacts:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              phone:
+                type: string
+              mobile:
+                type: string
+              role:
+                type: string
+
+    Project:
+      type: object
+      required: [project_id, customer_id, total_amount, currency, year]
+      properties:
+        project_id:
+          type: string
+        customer_id:
+          type: string
+        description:
+          type: string
+        total_amount:
+          type: number
+        currency:
+          type: string
+        segments:
+          type: array
+          items:
+            type: string
+        service_lines:
+          type: array
+          items:
+            type: string
+        partner:
+          type: string
+        delivery_status:
+          type: string
+        year:
+          type: integer
+        payment_terms:
+          type: array
+          items:
+            type: object
+            properties:
+              percent:
+                type: number
+              description:
+                type: string
+        assigned_resources:
+          type: array
+          items:
+            type: string
+
