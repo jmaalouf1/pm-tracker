@@ -1,0 +1,5 @@
+// --- additions for v1.2 ---
+import customerRoutes from './routes/customers.js';
+import projectTermsRoutes from './routes/projectTerms.js';
+app.use('/api/customers', customerRoutes);
+app.use('/api/projects/:id/terms', projectTermsRoutes);

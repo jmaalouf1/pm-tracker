@@ -8,6 +8,9 @@ import userRoutes from './routes/users.js';
 import projectRoutes from './routes/projects.js';
 import paymentTermRoutes from './routes/paymentTerms.js';
 import configRoutes from './routes/config.js';
+import customerRoutes from './routes/customers.js';
+import projectTermsRoutes from './routes/projectTerms.js';
+
 
 const app = express();
 app.use(helmet());
@@ -21,6 +24,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/payment-terms', paymentTermRoutes);
 app.use('/api/config', configRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/projects/:id/terms', projectTermsRoutes);
 
 app.use((err, req, res, next) => {
   req.log?.error(err);

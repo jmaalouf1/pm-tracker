@@ -6,8 +6,11 @@ import Layout from './components/Layout'
 import Login from './pages/Login'
 import ProjectsList from './pages/ProjectsList'
 import ProjectNew from './pages/ProjectNew'
-import PaymentTerms from './pages/PaymentTerms'
+import ProjectTerms from './pages/ProjectTerms'
+import PaymentTerms from './pages/PaymentTerms' // legacy standalone
 import Config from './pages/Config'
+import Customers from './pages/Customers'
+import './app.css'
 
 function Protected({ children }) {
   const { user } = useAuth()
@@ -22,8 +25,10 @@ createRoot(document.getElementById('root')).render(
         <Route path="/" element={<Protected><Layout /></Protected>}>
           <Route index element={<ProjectsList />} />
           <Route path="projects/new" element={<ProjectNew />} />
+          <Route path="projects/:id/terms" element={<ProjectTerms />} />
           <Route path="payment-terms" element={<PaymentTerms />} />
           <Route path="config" element={<Config />} />
+          <Route path="customers" element={<Customers />} />
         </Route>
       </Routes>
     </BrowserRouter>

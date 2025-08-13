@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import api from '../services/api'
+import { Link } from 'react-router-dom'
 
 export default function ProjectsList() {
   const [rows, setRows] = useState([])
@@ -17,14 +18,16 @@ export default function ProjectsList() {
   return (
     <div>
       <h2>Projects</h2>
-      <div style={{ marginBottom: 12 }}>
+      <div style={{ display:'flex', gap:8, marginBottom:12 }}>
         <input placeholder="Search..." value={query} onChange={e=>setQuery(e.target.value)} />
         <button onClick={load} disabled={loading}>Search</button>
+        <Link className="primary" to="/projects/new">New Project</Link>
       </div>
-      <table border="1" cellPadding="6" cellSpacing="0" width="100%">
+      <table>
         <thead>
           <tr>
-            <th>ID</th><th>Name</th><th>Customer</th><th>Segment</th><th>Service Line</th><th>Partner</th><th>Status</th><th>Invoice</th><th>PO</th><th>Backlog 2025</th>
+            <th>ID</th><th>Name</th><th>Customer</th><th>Segment</th><th>Service Line</th><th>Partner</th>
+            <th>Status</th><th>Remaining %</th><th>Backlog</th><th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -37,9 +40,9 @@ export default function ProjectsList() {
               <td>{r.service_line || ''}</td>
               <td>{r.partner || ''}</td>
               <td>{r.status || ''}</td>
-              <td>{r.invoice_status || ''}</td>
-              <td>{r.po_status || ''}</td>
-              <td>{Number(r.backlog_2025 || 0).toLocaleString()}</td>
+              <td>{Number(r.remaining_percent||0).toFixed(2)}%</td>
+              <td>{Number(r.backlog_amount||0).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+              <td><Link to={`/projects/${r.id}/terms`}>Manage Terms</Link></td>
             </tr>
           ))}
         </tbody>

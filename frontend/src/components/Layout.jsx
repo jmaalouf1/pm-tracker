@@ -1,30 +1,49 @@
-import React from 'react'
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import './layout.css'
 
 export default function Layout() {
   const { logout } = useAuth()
-  const loc = useLocation()
+  const nav = useNavigate()
+  const [q, setQ] = useState('')
+
+  function go(e) {
+    e.preventDefault()
+    const s = q.trim().toLowerCase()
+    if (!s) return
+    if (s.includes('new project')) return nav('/projects/new')
+    if (s.includes('projects')) return nav('/')
+    if (s.startsWith('terms')) {
+      const id = s.replace(/\D+/g, ''); if (id) return nav(`/projects/${id}/terms`)
+    }
+    if (s.includes('customers') || s.includes('customer')) return nav('/customers')
+    if (s.includes('config') || s.includes('status') || s.includes('segment')) return nav('/config')
+    return nav('/')
+  }
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <aside style={{ width: 260, borderRight: '1px solid #ddd', padding: 16 }}>
-        <h2>PM Tracker</h2>
-        <nav>
-          <div style={{ fontWeight: 'bold', marginTop: 8 }}>Projects</div>
-          <ul>
-            <li><Link to="/">View Projects</Link></li>
-            <li><Link to="/projects/new">New Project</Link></li>
-            <li><Link to="/payment-terms">Payment Terms</Link></li>
-          </ul>
-          <div style={{ fontWeight: 'bold', marginTop: 12 }}>Configuration</div>
-          <ul>
-            <li><Link to="/config">Dropdowns & Statuses</Link></li>
-          </ul>
+    <div className="shell">
+      <header className="topbar">
+        <div className="brand"><Link to="/">PM Tracker</Link></div>
+        <nav className="menu">
+          <div className="dropdown">
+            <span>Projects ▾</span>
+            <div className="dropdown-menu">
+              <Link to="/">View Projects</Link>
+              <Link to="/projects/new">New Project</Link>
+            </div>
+          </div>
+          <Link to="/customers">Customers</Link>
+          <Link to="/config">Config</Link>
         </nav>
-        <button onClick={logout} style={{ marginTop: 16 }}>Logout</button>
-      </aside>
-      <main style={{ flex: 1, padding: 24 }}>
-        <Outlet key={loc.key} />
+        <form onSubmit={go} className="quick">
+          <input placeholder="Search or jump (e.g. 'terms 12')" value={q} onChange={e=>setQ(e.target.value)} />
+        </form>
+        <button className="logout" onClick={logout}>Logout</button>
+      </header>
+      <main className="content">
+        <Outlet />
       </main>
     </div>
   )
