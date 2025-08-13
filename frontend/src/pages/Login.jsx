@@ -1,61 +1,49 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import '../app.css'
+// frontend/src/pages/Login.jsx
+import React, { useState } from 'react'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { setToken, apiFetch } from '../lib/api'
 
 export default function Login() {
   const [email, setEmail] = useState('admin@example.com')
-  const [password, setPassword] = useState('Admin@12345')
-  const [error, setError] = useState('')
+  const [password, setPassword] = useState('password')
   const [busy, setBusy] = useState(false)
-  const { login, user } = useAuth()
-  const nav = useNavigate()
-  useEffect(()=>{ if(user) nav('/') },[user])
+  const [err, setErr] = useState(null)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const from = (location.state && location.state.from) || '/home'
 
-  async function submit(e) {
-    e.preventDefault(); setBusy(true); setError('')
-    try { await login(email, password); nav('/') }
-    catch (e) { setError(e.message || 'Login failed') }
-    finally { setBusy(false) }
-  }
+async function onSubmit(e) {
+  e.preventDefault()
+  setBusy(true); setErr(null)
+  try {
+    const res = await apiFetch('/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    })
+    const out = await res.json().catch(() => ({}))
+    const tok = out.token || out.accessToken || out.access_token
+    if (!res.ok || !tok) throw new Error(out?.message || 'Login failed')
+    setToken(tok)
+    navigate(from, { replace: true })
+  } catch (e) { setErr(e) } finally { setBusy(false) }
+}
 
   return (
-    <>
-      <div className="login-wrap">
-        <div className="login-hero">
-          <h1>Track projects, terms and cashflow in one place</h1>
-          <p>Create projects with milestones, update term statuses quickly, and keep finance and delivery in sync.</p>
-          <ul className="mt-3" style={{color:'#5b677a'}}>
-            <li>Instant search across projects and customers</li>
-            <li>Payment terms with validation and status updates</li>
-            <li>PM assignments that show only what each PM owns</li>
-          </ul>
-        </div>
-
-        <div className="d-flex justify-content-center">
-          <div className="login-panel">
-            <div className="mb-3">
-              <div className="fw-bold">PM Tracker</div>
-              <div className="copy-muted small">Sign in to your workspace</div>
-            </div>
-
-            <form onSubmit={submit}>
-              <div className="mb-3">
-                <label className="form-label fw-bold">Email</label>
-                <input className="form-control" type="email" value={email} onChange={e=>setEmail(e.target.value)} required />
-              </div>
-              <div className="mb-2">
-                <label className="form-label fw-bold">Password</label>
-                <input className="form-control" type="password" value={password} onChange={e=>setPassword(e.target.value)} required />
-              </div>
-              {error ? <div className="text-danger small mb-2">{error}</div> : <div className="form-text">Use your PM Tracker credentials.</div>}
-              <button className="btn btn-primary w-100 mt-2" disabled={busy}>{busy ? 'Signing in...' : 'Sign in'}</button>
-            </form>
-          </div>
-        </div>
+    <div className="container-page py-5" style={{maxWidth: 520}}>
+      <h2 className="mb-3">Sign in</h2>
+      <p className="text-muted">Use your PM Tracker credentials.</p>
+      <form onSubmit={onSubmit} className="card p-3">
+        <label className="form-label">Email</label>
+        <input className="form-control mb-2" value={email} onChange={e=>setEmail(e.target.value)} />
+        <label className="form-label">Password</label>
+        <input type="password" className="form-control mb-3" value={password} onChange={e=>setPassword(e.target.value)} />
+        {err && <div className="alert alert-danger">{String(err.message || err)}</div>}
+        <button className="btn btn-primary" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+      </form>
+      <div className="mt-3">
+        <Link to="/home">Back to home</Link>
       </div>
-
-      <div className="footer-copy">(c) 2025 PM Tracker. All rights reserved.</div>
-    </>
+    </div>
   )
 }
