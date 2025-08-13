@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as Auth from '../middleware/auth.js';
 import { loadUser } from '../middleware/loadUser.js';
-import { searchTerms, updateTermStatus } from '../controllers/projectTermsAdminController.js';
+import { UsersAdmin } from '../controllers/usersAdminController.js';
 
 const pickAuth = () => {
   const names = ['authMiddleware','requireAuth','verifyToken','ensureAuth','authenticate'];
@@ -13,7 +13,12 @@ const pickAuth = () => {
 const authMw = pickAuth();
 
 const r = Router();
-r.use(authMw, loadUser);
-r.get('/', searchTerms);
-r.patch('/:id', updateTermStatus);
+r.use(authMw, loadUser, UsersAdmin.requireAdmin);
+
+r.get('/', UsersAdmin.list);
+r.post('/', UsersAdmin.create);
+r.get('/:id/customers', UsersAdmin.getAssignedCustomers);
+r.put('/:id/customers', UsersAdmin.putAssignedCustomers);
+r.patch('/:id/role', UsersAdmin.updateRole);
+
 export default r;

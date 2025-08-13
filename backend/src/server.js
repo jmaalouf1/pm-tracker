@@ -1,4 +1,5 @@
 import express from 'express';
+import usersAdminRoutes from './routes/usersAdmin.js';
 import projectTermsAdminRoutes from './routes/projectTermsAdmin.js';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -21,6 +22,7 @@ app.use(pinoHttp());
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRoutes);
+app.use('/api/users', usersAdminRoutes);
 app.use('/api/project-terms', projectTermsAdminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
