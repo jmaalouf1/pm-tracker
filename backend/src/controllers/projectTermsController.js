@@ -1,14 +1,10 @@
 import { pool } from '../db.js';
 
-async function ensureProject(id) {
-  const [[p]] = await pool.query('SELECT id FROM projects WHERE id = ?', [id]);
-  return !!p;
-}
+function pct(n){ n = Number(n); if(isNaN(n)) return 0; return Math.max(0, Math.min(100, n)); }
 
 export const ProjectTermsController = {
   async list(req, res) {
     const { id } = req.params;
-    if (!(await ensureProject(id))) return res.status(404).json({ error: 'Project not found' });
     const [rows] = await pool.query(
       `SELECT t.*, s.name AS status
          FROM project_terms t
@@ -23,12 +19,11 @@ export const ProjectTermsController = {
     if (!Array.isArray(terms) || !terms.length) return res.status(400).json({ error: 'terms array required' });
     let sum = 0;
     for (const t of terms) {
-      const pct = Number(t.percentage);
-      if (!(pct >= 0 && pct <= 100)) return res.status(400).json({ error: 'percentage must be between 0 and 100' });
+      const p = pct(t.percentage);
+      if (!(p >= 0 && p <= 100)) return res.status(400).json({ error: 'percentage must be between 0 and 100' });
       if (!t.description || !String(t.description).trim()) return res.status(400).json({ error: 'description required for each term' });
-      sum += pct;
+      sum += p;
     }
-    // floating tolerance 3 decimals
     if (Math.abs(sum - 100) > 0.01) return res.status(400).json({ error: 'Sum of percentages must equal 100%' });
 
     const conn = await pool.getConnection();
@@ -39,7 +34,7 @@ export const ProjectTermsController = {
       for (const t of terms) {
         await conn.query(
           'INSERT INTO project_terms (project_id, seq, percentage, description, status_id) VALUES (?,?,?,?,?)',
-          [id, seq++, Number(t.percentage), t.description, t.status_id || null]
+          [id, seq++, pct(t.percentage), t.description, t.status_id || null]
         );
       }
       await conn.commit();

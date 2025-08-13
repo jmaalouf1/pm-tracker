@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+
 export default function Login() {
   const [email, setEmail] = useState('admin@example.com')
   const [password, setPassword] = useState('Admin@12345')
@@ -15,14 +16,24 @@ export default function Login() {
     finally { setBusy(false) }
   }
   return (
-    <form onSubmit={submit} className="container">
-      <h2>Sign in</h2>
-      <label>Email</label>
-      <input autoFocus type="email" value={email} onChange={e=>setEmail(e.target.value)} required />
-      <label>Password</label>
-      <input type="password" value={password} onChange={e=>setPassword(e.target.value)} required />
-      {error ? <small className="error">{error}</small> : null}
-      <button type="submit" disabled={busy}>{busy ? 'Signing inâ€¦' : 'Login'}</button>
-    </form>
+    <div className="d-flex justify-content-center align-items-center" style={{minHeight:'70vh'}}>
+      <div className="card shadow-sm container-narrow w-100">
+        <div className="card-body">
+          <h4 className="card-title mb-3">Sign in</h4>
+          <form onSubmit={submit}>
+            <div className="mb-3">
+              <label className="form-label">Email</label>
+              <input className="form-control" type="email" value={email} onChange={e=>setEmail(e.target.value)} required />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Password</label>
+              <input className="form-control" type="password" value={password} onChange={e=>setPassword(e.target.value)} required />
+            </div>
+            {error ? <div className="text-danger small mb-2">{error}</div> : null}
+            <button className="btn btn-primary" disabled={busy}>{busy ? 'Signing in…' : 'Login'}</button>
+          </form>
+        </div>
+      </div>
+    </div>
   )
 }

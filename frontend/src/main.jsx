@@ -7,9 +7,9 @@ import Login from './pages/Login'
 import ProjectsList from './pages/ProjectsList'
 import ProjectNew from './pages/ProjectNew'
 import ProjectTerms from './pages/ProjectTerms'
-import PaymentTerms from './pages/PaymentTerms' // legacy standalone
-import Config from './pages/Config'
+import PaymentTerms from './pages/PaymentTerms'
 import Customers from './pages/Customers'
+import Config from './pages/Config'
 import './app.css'
 
 function Protected({ children }) {
@@ -26,9 +26,9 @@ createRoot(document.getElementById('root')).render(
           <Route index element={<ProjectsList />} />
           <Route path="projects/new" element={<ProjectNew />} />
           <Route path="projects/:id/terms" element={<ProjectTerms />} />
-          <Route path="payment-terms" element={<PaymentTerms />} />
-          <Route path="config" element={<Config />} />
+          <Route path="project-terms" element={<PaymentTerms />} />
           <Route path="customers" element={<Customers />} />
+          <Route path="config" element={<Config />} />
         </Route>
       </Routes>
     </BrowserRouter>

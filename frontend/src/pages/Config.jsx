@@ -17,32 +17,36 @@ function Editor({ title, type, rows, setRows }) {
     await api.put(`/config/options/${type}/${r.id}`, { name: r.name, is_active: r.is_active })
   }
   return (
-    <div className="card" style={{ marginBottom: 24 }}>
-      <h3>{title}</h3>
-      <div style={{ display:'flex', gap:8, marginBottom:8 }}>
-        {type === 'statuses' ? (
-          <select value={statusType} onChange={e=>setStatusType(e.target.value)}>
-            <option value="project_status">Project Status</option>
-            <option value="invoice_status">Invoice Status</option>
-            <option value="po_status">PO Status</option>
-            <option value="term_status">Term Status</option>
-          </select>
-        ) : null}
-        <input placeholder="Name" value={name} onChange={e=>setName(e.target.value)} />
-        <button onClick={add}>Add</button>
+    <div className="card shadow-sm mb-4">
+      <div className="card-body">
+        <h5 className="mb-3">{title}</h5>
+        <div className="d-flex gap-2 mb-2">
+          {type === 'statuses' ? (
+            <select className="form-select w-auto" value={statusType} onChange={e=>setStatusType(e.target.value)}>
+              <option value="project_status">Project Status</option>
+              <option value="invoice_status">Invoice Status</option>
+              <option value="po_status">PO Status</option>
+              <option value="term_status">Term Status</option>
+            </select>
+          ) : null}
+          <input className="form-control" placeholder="Name" value={name} onChange={e=>setName(e.target.value)} />
+          <button className="btn btn-outline-secondary" onClick={add}>Add</button>
+        </div>
+        <div className="table-responsive">
+          <table className="table table-sm">
+            <thead><tr><th>Name</th><th>Active</th><th>Save</th></tr></thead>
+            <tbody>
+              {rows.map(r => (
+                <tr key={r.id}>
+                  <td><input className="form-control form-control-sm" value={r.name} onChange={e=>setRows(list=>list.map(x=>x.id===r.id?{...x,name:e.target.value}:x))} /></td>
+                  <td><input type="checkbox" checked={!!r.is_active} onChange={e=>setRows(list=>list.map(x=>x.id===r.id?{...x,is_active:e.target.checked?1:0}:x))} /></td>
+                  <td><button className="btn btn-sm btn-outline-primary" onClick={()=>save(r)}>Save</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <table>
-        <thead><tr><th>Name</th><th>Active</th><th>Save</th></tr></thead>
-        <tbody>
-          {rows.map(r => (
-            <tr key={r.id}>
-              <td><input value={r.name} onChange={e=>setRows(list=>list.map(x=>x.id===r.id?{...x,name:e.target.value}:x))} /></td>
-              <td><input type="checkbox" checked={!!r.is_active} onChange={e=>setRows(list=>list.map(x=>x.id===r.id?{...x,is_active:e.target.checked?1:0}:x))} /></td>
-              <td><button onClick={()=>save(r)}>Save</button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   )
 }
@@ -58,7 +62,7 @@ export default function Config() {
   }, [])
   return (
     <div>
-      <h2>Dropdowns & Statuses</h2>
+      <h2 className="mb-3">Dropdowns & Statuses</h2>
       <Editor title="Segments" type="segments" rows={data.segments} setRows={rows=>setData(s=>({...s, segments: rows}))} />
       <Editor title="Service Lines" type="service_lines" rows={data.service_lines} setRows={rows=>setData(s=>({...s, service_lines: rows}))} />
       <Editor title="Partners" type="partners" rows={data.partners} setRows={rows=>setData(s=>({...s, partners: rows}))} />
