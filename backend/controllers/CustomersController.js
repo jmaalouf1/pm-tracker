@@ -1,23 +1,39 @@
-/**
- * The CustomersController file is a very simple one, which does not need to be changed manually,
- * unless there's a case where business logic routes the request to an entity which is not
- * the service.
- * The heavy lifting of the Controller item is done in Request.js - that is where request
- * parameters are extracted and sent to the service, and where response is handled.
- */
+// backend/src/controllers/customersController.js
+import pool from '../../db.js';
 
-const Controller = require('./Controller');
-const service = require('../services/CustomersService');
-const customersGET = async (request, response) => {
-  await Controller.handleRequest(request, response, service.customersGET);
-};
+export const Customers = {
+  async list(req, res) {
+    // optional q = name, CR or VAT contains
+    const q = (req.query.q || '').trim();
+    const params = [];
+    let where = '';
+    if (q) {
+      where = `WHERE c.name LIKE ? OR c.cr LIKE ? OR c.vat LIKE ?`;
+      const like = `%${q}%`;
+      params.push(like, like, like);
+    }
 
-const customersPOST = async (request, response) => {
-  await Controller.handleRequest(request, response, service.customersPOST);
-};
+    // Return basic fields; extend as needed
+    const sql = `
+      SELECT c.id, c.name, c.country, c.type, c.cr, c.vat
+      FROM customers c
+      ${where}
+      ORDER BY c.name ASC
+      LIMIT 200
+    `;
+    const [rows] = await pool.query(sql, params);
+    res.json({ items: rows });
+  },
 
+  async create(req, res) {
+    const { name, country, type, cr, vat } = req.body || {};
+    if (!name) return res.status(400).json({ message: 'name is required' });
 
-module.exports = {
-  customersGET,
-  customersPOST,
+    const sql = `
+      INSERT INTO customers (name, country, type, cr, vat, is_active)
+      VALUES (?,?,?,?,?,1)
+    `;
+    const [r] = await pool.query(sql, [name, country || null, type || null, cr || null, vat || null]);
+    res.status(201).json({ id: r.insertId });
+  },
 };
