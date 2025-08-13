@@ -1,19 +1,35 @@
+// frontend/src/components/Layout.jsx
 import React from 'react'
-import { Outlet } from 'react-router-dom'
-import '../app.css'
-import TopBar from './TopBar'
-import { useAuth } from '../context/AuthContext'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { getToken, setToken } from '../lib/api'
 
-export default function Layout() {
-  const { user, logout } = useAuth()
-  async function onLogout(e){ e.preventDefault(); try { await logout() } finally { window.location.href='/login' } }
+export default function Layout(){
+  const navigate = useNavigate()
+  const tok = getToken()
+  const logout = () => { setToken(''); navigate('/login', { replace:true }) }
+
   return (
     <>
-      <TopBar user={user} onLogout={onLogout} />
-      <main className="container-page">
-        <Outlet />
-        <div className="mt-4 footer-copy">(c) 2025 All rights reserved.</div>
-      </main>
+      <header className="nav-bar">
+        <div className="nav-left">
+          <NavLink to="/home" className="nav-item">Home</NavLink>
+          <NavLink to="/projects" className="nav-item">Projects</NavLink>
+          <NavLink to="/customers" className="nav-item">Customers</NavLink>
+          <NavLink to="/config" className="nav-item">Config</NavLink>
+          <NavLink to="/users" className="nav-item">Users</NavLink>
+          <NavLink to="/import" className="nav-item">Upload</NavLink>
+        </div>
+        <div className="nav-center">
+          <input className="nav-search" placeholder="Jump: home / import / users / customers" />
+        </div>
+        <div className="nav-right">
+          {tok ? <button className="btn btn-light" onClick={logout}>Sign out</button> : null}
+        </div>
+      </header>
+      <main><Outlet/></main>
+      <footer className="footer">
+        <small>© {new Date().getFullYear()} PM Tracker</small>
+      </footer>
     </>
   )
 }
