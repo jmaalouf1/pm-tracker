@@ -1,0 +1,292 @@
+openapi: 3.0.3
+info:
+  description: "Cloud-agnostic API for managing users, customers, projects, and finance\
+    \ updates"
+  title: Project Tracker API
+  version: 1.0.0
+servers:
+- url: https://api.example.com/v1
+paths:
+  /auth/login:
+    post:
+      operationId: authLoginPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_auth_login_post_request'
+        required: true
+      responses:
+        "200":
+          description: JWT tokens returned
+        "401":
+          description: Invalid credentials
+      summary: User login to obtain JWT tokens
+      tags:
+      - Auth
+      x-eov-operation-handler: controllers/AuthController
+  /auth/refresh:
+    post:
+      operationId: authRefreshPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_auth_refresh_post_request'
+        required: true
+      responses:
+        "200":
+          description: New access token returned
+      summary: Refresh access token
+      tags:
+      - Auth
+      x-eov-operation-handler: controllers/AuthController
+  /auth/change-password:
+    post:
+      operationId: authChangePasswordPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_auth_change_password_post_request'
+      responses:
+        "200":
+          description: Password changed
+      security:
+      - bearerAuth: []
+      summary: "Change password (e.g., first login)"
+      tags:
+      - Auth
+      x-eov-operation-handler: controllers/AuthController
+  /customers:
+    get:
+      operationId: customersGET
+      responses:
+        "200":
+          description: A list of customers
+      security:
+      - bearerAuth: []
+      summary: List all customers
+      tags:
+      - Customers
+      x-eov-operation-handler: controllers/CustomersController
+    post:
+      operationId: customersPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        "201":
+          description: Customer created
+      security:
+      - bearerAuth: []
+      summary: Create a new customer
+      tags:
+      - Customers
+      x-eov-operation-handler: controllers/CustomersController
+  /projects:
+    post:
+      operationId: projectsPOST
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        "201":
+          description: Project created
+      security:
+      - bearerAuth: []
+      summary: Create a new project
+      tags:
+      - Projects
+      x-eov-operation-handler: controllers/ProjectsController
+  /finance/{project_id}:
+    patch:
+      operationId: financeProjectIdPATCH
+      parameters:
+      - explode: false
+        in: path
+        name: project_id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_finance__project_id__patch_request'
+      responses:
+        "200":
+          description: Finance information updated
+      security:
+      - bearerAuth: []
+      summary: Update invoice status or PO flag
+      tags:
+      - Finance
+      x-eov-operation-handler: controllers/FinanceController
+components:
+  schemas:
+    Customer:
+      example:
+        country: country
+        institution_type: institution_type
+        registration_number: registration_number
+        name: name
+        contacts:
+        - role: role
+          phone: phone
+          name: name
+          mobile: mobile
+        - role: role
+          phone: phone
+          name: name
+          mobile: mobile
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        institution_type:
+          type: string
+        registration_number:
+          type: string
+        contacts:
+          items:
+            $ref: '#/components/schemas/Customer_contacts_inner'
+          type: array
+      required:
+      - country
+      - institution_type
+      - name
+      type: object
+    Project:
+      example:
+        partner: partner
+        project_id: project_id
+        total_amount: 0.8008281904610115
+        year: 6
+        description: description
+        assigned_resources:
+        - assigned_resources
+        - assigned_resources
+        currency: currency
+        service_lines:
+        - service_lines
+        - service_lines
+        customer_id: customer_id
+        payment_terms:
+        - description: description
+          percent: 1.4658129805029452
+        - description: description
+          percent: 1.4658129805029452
+        delivery_status: delivery_status
+        segments:
+        - segments
+        - segments
+      properties:
+        project_id:
+          type: string
+        customer_id:
+          type: string
+        description:
+          type: string
+        total_amount:
+          type: number
+        currency:
+          type: string
+        segments:
+          items:
+            type: string
+          type: array
+        service_lines:
+          items:
+            type: string
+          type: array
+        partner:
+          type: string
+        delivery_status:
+          type: string
+        year:
+          type: integer
+        payment_terms:
+          items:
+            $ref: '#/components/schemas/Project_payment_terms_inner'
+          type: array
+        assigned_resources:
+          items:
+            type: string
+          type: array
+      required:
+      - currency
+      - customer_id
+      - project_id
+      - total_amount
+      - year
+      type: object
+    _auth_login_post_request:
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+      - password
+      - username
+      type: object
+    _auth_refresh_post_request:
+      properties:
+        refresh_token:
+          type: string
+      type: object
+    _auth_change_password_post_request:
+      properties:
+        old_password:
+          type: string
+        new_password:
+          type: string
+      required:
+      - new_password
+      - old_password
+      type: object
+    _finance__project_id__patch_request:
+      properties:
+        po_issued:
+          type: boolean
+        invoice_status:
+          type: string
+      type: object
+    Customer_contacts_inner:
+      example:
+        role: role
+        phone: phone
+        name: name
+        mobile: mobile
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        mobile:
+          type: string
+        role:
+          type: string
+      type: object
+    Project_payment_terms_inner:
+      example:
+        description: description
+        percent: 1.4658129805029452
+      properties:
+        percent:
+          type: number
+        description:
+          type: string
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http

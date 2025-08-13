@@ -1,0 +1,91 @@
+
+> project-tracker-api@1.0.0 prestart
+> npm install
+
+
+up to date, audited 517 packages in 2s
+
+120 packages are looking for funding
+  run `npm fund` for details
+
+3 high severity vulnerabilities
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
+
+> project-tracker-api@1.0.0 start
+> node index.js
+
+[dotenv@17.2.1] injecting env (6) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.2.1] injecting env (0) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+[dotenv@17.2.1] injecting env (0) from .env -- tip: 📡 version env with Radar: https://dotenvx.com/radar
+Listening on port 8080
+✅ Connected to MySQL
+Login error: Error: data and hash arguments required
+    at Object.compare (/home/johnnymaalouf777/projects/backend/node_modules/bcrypt/bcrypt.js:204:17)
+    at /home/johnnymaalouf777/projects/backend/node_modules/bcrypt/promises.js:26:12
+    at new Promise (<anonymous>)
+    at Object.promise (/home/johnnymaalouf777/projects/backend/node_modules/bcrypt/promises.js:17:12)
+    at Object.compare (/home/johnnymaalouf777/projects/backend/node_modules/bcrypt/bcrypt.js:200:25)
+    at exports.login (/home/johnnymaalouf777/projects/backend/controllers/authController.js:15:32)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Login error: Error: data and hash arguments required
+    at Object.compare (/home/johnnymaalouf777/projects/backend/node_modules/bcrypt/bcrypt.js:204:17)
+    at /home/johnnymaalouf777/projects/backend/node_modules/bcrypt/promises.js:26:12
+    at new Promise (<anonymous>)
+    at Object.promise (/home/johnnymaalouf777/projects/backend/node_modules/bcrypt/promises.js:17:12)
+    at Object.compare (/home/johnnymaalouf777/projects/backend/node_modules/bcrypt/bcrypt.js:200:25)
+    at exports.login (/home/johnnymaalouf777/projects/backend/controllers/authController.js:15:32)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+> project-tracker-api@1.0.0 prestart
+> npm install
+
+
+up to date, audited 517 packages in 2s
+
+120 packages are looking for funding
+  run `npm fund` for details
+
+3 high severity vulnerabilities
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
+
+> project-tracker-api@1.0.0 start
+> node index.js
+
+[dotenv@17.2.1] injecting env (6) from .env -- tip: 📡 observe env with Radar: https://dotenvx.com/radar
+[dotenv@17.2.1] injecting env (0) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.2.1] injecting env (0) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+node:events:495
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::8080
+    at Server.setupListenHandle [as _listen2] (node:net:1811:16)
+    at listenInCluster (node:net:1859:12)
+    at Server.listen (node:net:1947:7)
+    at Function.listen (/home/johnnymaalouf777/projects/backend/node_modules/express/lib/application.js:635:24)
+    at Object.<anonymous> (/home/johnnymaalouf777/projects/backend/index.js:30:5)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1838:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 8080
+}
+
+Node.js v18.19.0
+Killed

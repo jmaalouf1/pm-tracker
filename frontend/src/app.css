@@ -1,0 +1,52 @@
+:root{
+  --brand:#1f6feb; --brand-700:#1a5fd1;
+  --bg:#f7f9fc; --card:#ffffff; --text:#0f172a; --muted:#64748b;
+  --radius:12px; --shadow:0 4px 14px rgba(16,24,40,.08);
+}
+html,body{background:var(--bg); color:var(--text); min-height:100%;}
+/* Slim, non-fixed navbar with 3 zones */
+.navbar{background:linear-gradient(90deg,var(--brand),var(--brand-700)); box-shadow:var(--shadow); padding:.35rem 0;}
+.nav-row{display:flex; align-items:center; gap:12px; width:100%}
+.nav-left{display:flex; align-items:center; gap:8px}
+.nav-center{flex:1; display:flex; justify-content:center}
+.nav-center .form-control{max-width:600px; min-width:320px}
+.nav-right{display:flex; align-items:center; gap:8px}
+.navbar .nav-link, .navbar .btn{color:#fff} .navbar .btn-outline-light{border-color:#fff}
+.container-page{max-width:1200px; margin-inline:auto; padding:20px;}
+.card{border:none; border-radius:var(--radius); background:var(--card); box-shadow:var(--shadow);}
+.table thead th{position:sticky; top:0; background:#fff; z-index:1}
+.footer-copy{color:#6b7280; font-size:.86rem; text-align:center; padding:16px 0 24px}
+
+/* Common inputs */
+.input-icon{position:relative}
+.input-icon .left-icon{position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.55}
+.input-icon input{padding-left:36px}
+
+/* Pagination */
+.pagination .btn{min-width:84px}
+
+/* Login */
+.login-wrap{display:grid; grid-template-columns:1fr; gap:24px; min-height:calc(100vh - 80px); align-items:center}
+@media (min-width: 992px){ .login-wrap{ grid-template-columns: 1.1fr 0.9fr; } }
+.login-hero{display:none}
+@media (min-width: 992px){
+  .login-hero{display:block; margin:10px 10px 10px 0; padding:28px; border-radius:16px; background:linear-gradient(135deg,#eef3ff,#f7fbff); box-shadow:var(--shadow);}
+}
+.login-hero h1{font-weight:800; margin-bottom:8px}
+.login-hero p{color:var(--muted)}
+.login-panel{width:100%; max-width:420px; background:var(--card); border-radius:14px; box-shadow:var(--shadow); padding:22px}
+.copy-muted{color:#94a3b8; font-size:.92rem}
+
+/* === UI POLISH PACK (isolated) === */
+.topbar{background:linear-gradient(90deg,#1f6feb,#1a5fd1); box-shadow:0 4px 14px rgba(16,24,40,.08); padding:.35rem 0;}
+.topbar-row{display:flex; align-items:center; gap:12px}
+.topbar-left{display:flex; align-items:center; gap:8px}
+.topbar-center{flex:1; display:flex; justify-content:center}
+.topbar-right{display:flex; align-items:center; gap:8px}
+
+/* === UI POLISH PACK (isolated) === */
+.topbar{background:linear-gradient(90deg,#1f6feb,#1a5fd1); box-shadow:0 4px 14px rgba(16,24,40,.08); padding:.35rem 0;}
+.topbar-row{display:flex; align-items:center; gap:12px}
+.topbar-left{display:flex; align-items:center; gap:8px}
+.topbar-center{flex:1; display:flex; justify-content:center}
+.topbar-right{display:flex; align-items:center; gap:8px}

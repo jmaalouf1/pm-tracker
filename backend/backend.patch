@@ -1,0 +1,124 @@
+diff --git a/routes/config.js b/routes/config.js
+index 1111111..2222222 100644
+--- a/routes/config.js
++++ b/routes/config.js
+@@ -1,18 +1,153 @@
+-// backend/routes/config.js
+-
+-const express = require('express');
+-const router = express.Router();
+-const db = require('../db');
+-const { verifyToken } = require('../middleware/authMiddleware');
+-
+-// Example: GET list of customers
+-router.get('/customers', verifyToken, async (req, res) => {
+-  try {
+-    const [customers] = await db.query('SELECT * FROM customers');
+-    res.json(customers);
+-  } catch (err) {
+-    console.error('Error fetching customers:', err);
+-    res.status(500).json({ message: 'Internal server error' });
+-  }
+-});
+-
+-module.exports = router;
++// backend/routes/config.js
++const express = require('express');
++const router = express.Router();
++const db = require('../db');
++const { verifyToken, isSuperAdmin } = require('../middleware/authMiddleware');
++
++/**
++ * CUSTOMERS (for autocomplete and admin viewing)
++ */
++router.get('/customers', verifyToken, async (req, res) => {
++  try {
++    const { search = '', limit = 50 } = req.query;
++    if (search) {
++      const [rows] = await db.execute(
++        'SELECT id, name, country FROM customers WHERE name LIKE ? ORDER BY name LIMIT ?',
++        [`%${search}%`, Number(limit) || 50]
++      );
++      return res.json(rows);
++    }
++    const [customers] = await db.query('SELECT id, name, country FROM customers ORDER BY name');
++    res.json(customers);
++  } catch (err) {
++    console.error('Error fetching customers:', err);
++    res.status(500).json({ message: 'Internal server error' });
++  }
++});
++
++/**
++ * LOOKUPS: Payment Statuses
++ * Table expected: payment_statuses (id INT PK AI, label VARCHAR(100) UNIQUE NOT NULL)
++ */
++router.get('/payment-statuses', verifyToken, async (req, res) => {
++  try {
++    const [rows] = await db.query('SELECT id, label FROM payment_statuses ORDER BY label');
++    res.json(rows);
++  } catch (e) {
++    console.error('get payment-statuses error', e);
++    res.status(500).json({ message: 'Internal server error' });
++  }
++});
++
++router.post('/payment-statuses', verifyToken, isSuperAdmin, async (req, res) => {
++  try {
++    const { label } = req.body || {};
++    if (!label || !String(label).trim()) {
++      return res.status(400).json({ message: 'label is required' });
++    }
++    await db.execute('INSERT INTO payment_statuses (label) VALUES (?)', [String(label).trim()]);
++    res.status(201).json({ message: 'Created' });
++  } catch (e) {
++    console.error('create payment-status error', e);
++    res.status(500).json({ message: 'Internal server error' });
++  }
++});
++
++router.put('/payment-statuses/:id', verifyToken, isSuperAdmin, async (req, res) => {
++  try {
++    const { id } = req.params;
++    const { label } = req.body || {};
++    if (!label || !String(label).trim()) {
++      return res.status(400).json({ message: 'label is required' });
++    }
++    const [r] = await db.execute('UPDATE payment_statuses SET label=? WHERE id=?', [String(label).trim(), id]);
++    if (r.affectedRows === 0) return res.status(404).json({ message: 'Not found' });
++    res.json({ message: 'Updated' });
++  } catch (e) {
++    console.error('update payment-status error', e);
++    res.status(500).json({ message: 'Internal server error' });
++  }
++});
++
++router.delete('/payment-statuses/:id', verifyToken, isSuperAdmin, async (req, res) => {
++  try {
++    const { id } = req.params;
++    const [r] = await db.execute('DELETE FROM payment_statuses WHERE id=?', [id]);
++    if (r.affectedRows === 0) return res.status(404).json({ message: 'Not found' });
++    res.json({ message: 'Deleted' });
++  } catch (e) {
++    console.error('delete payment-status error', e);
++    res.status(500).json({ message: 'Internal server error' });
++  }
++});
++
++/**
++ * OPTIONAL: Partners, Delivery statuses, Currencies (fallback if you don't have DB tables yet)
++ * You can later swap these to DB-driven endpoints.
++ */
++router.get('/partners', verifyToken, async (_req, res) => {
++  res.json([{ label: 'eMcREY' }, { label: 'FIS' }, { label: 'CMA' }, { label: 'Datacard' }]);
++});
++
++router.get('/delivery-statuses', verifyToken, async (_req, res) => {
++  res.json([{ label: 'Hold' }, { label: 'Open' }, { label: 'Delivered' }, { label: 'Accepted' }]);
++});
++
++router.get('/currencies', verifyToken, async (_req, res) => {
++  res.json([{ code: 'USD' }, { code: 'EUR' }, { code: 'GBP' }, { code: 'AED' }, { code: 'SAR' }]);
++});
++
++module.exports = router;

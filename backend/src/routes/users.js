@@ -1,0 +1,10 @@
+import express from 'express';
+import { UsersController } from '../controllers/usersController.js';
+import { authRequired } from '../middleware/auth.js';
+import { requireRole } from '../middleware/auth.js';
+import { Roles } from '../lib/rbac.js';
+const router = express.Router();
+router.use(authRequired, requireRole(Roles.SUPER, Roles.PM_ADMIN));
+router.get('/', UsersController.list);
+router.post('/', UsersController.create);
+export default router;
